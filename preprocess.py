@@ -5,17 +5,23 @@ from scipy.misc import imsave
 import numpy as np
 
 
-def data_split(x_train, y_train, proportion=0.8):
+# Split data into test and validation
+def data_split(x_train, y_train, proportion=0.7):
     return (x_train[:int(proportion * x_train.shape[0])], y_train[:int(proportion * x_train.shape[0])]), \
            (x_train[int(proportion * x_train.shape[0]):], y_train[int(proportion * x_train.shape[0]):])
 
 
-def data_to_categories(data, keys):
+# Normalize data
+def data_prepocess(data, keys):
     for key in keys:
         if 'y' in key:
             data[key + '_gt'] = np_utils.to_categorical(data[key])
+        if 'x' in key:
+            data[key].astype('float')
+            data[key] = data[key]/255.0
 
 
+# Visualize first data with labels
 def visualize_data(paths, data, data_status, number=100, notebook=False):
     for data_status_item in data_status:
         for i in range(number):
@@ -33,6 +39,7 @@ def visualize_data(paths, data, data_status, number=100, notebook=False):
                                                     str(i) + '.png')))
 
 
+# Save data in .npy format
 def save_data(path, dictionnary):
     for key in dictionnary:
         np.save(os.path.join(path,key),
